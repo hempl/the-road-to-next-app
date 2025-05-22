@@ -1,6 +1,7 @@
 import { LucideBird } from "lucide-react"
 import Link from "next/link"
 import { homePath, ticketsPath } from "@/paths"
+import { ThemeSwitcher } from "./theme/theme-switcher"
 import { buttonVariants } from "./ui/button"
 
 const Header = () => {
@@ -13,13 +14,14 @@ const Header = () => {
         w-full flex py-2.5 px-5 justify-between
         "
     >
-      <div>
+      <div className="flex align-items gap-x-2">
         <Link href={homePath()} className={buttonVariants({ variant: "ghost" })}>
           <LucideBird />
           <h1 className="text-lg font-semibold">Ticketbounty</h1>
         </Link>
       </div>
-      <div>
+      <div className="flex align-items gap-x-2">
+        <ThemeSwitcher />
         <Link href={ticketsPath()} className={buttonVariants({ variant: "default" })}>
           Tickets
         </Link>

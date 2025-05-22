@@ -1,37 +1,27 @@
-import { LucideCircleCheck, LucideFile, LucidePencilLine } from "lucide-react"
-import Link from "next/link"
-import { Heading } from "@/components/heading"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { initialTickets } from "@/data"
-import { ticketPath } from "@/paths"
+"use client"
 
-const TICKET_ICONS = {
-  OPEN: <LucideFile />,
-  IN_PROGRESS: <LucidePencilLine />,
-  DONE: <LucideCircleCheck />,
-}
+import { useEffect, useState } from "react"
+import { Heading } from "@/components/heading"
+import { TicketItem } from "@/features/ticket/components/ticket-item"
+import { getTickets } from "@/features/ticket/queries/get-tickets"
+import { Ticket } from "@/features/ticket/types"
+
 const TicketsPage = () => {
+  const [tickets, setTickets] = useState<Ticket[]>([])
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      const result = await getTickets()
+      setTickets(result)
+    }
+    fetchTickets()
+  })
   return (
     <div className="flex-1 flex flex-col gap-y-8">
       <Heading title="TicketsPage" description="All your tickets at one place"></Heading>
       <div className="flex-1 flex flex-col items-center gap-y-4 animate-fade-from-top">
-        {initialTickets.map((ticket) => (
-          <Card key={ticket.id} className="w-full max-w-[420px]">
-            <CardHeader>
-              <CardTitle className="flex gap-2">
-                <span>{TICKET_ICONS[ticket.status]}</span>
-                <span className="text-lg font-semibold truncate">{ticket.title}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="line-clamp-3 whitespace-break-spaces">{ticket.content}</span>
-            </CardContent>
-            <CardFooter>
-              <Link href={ticketPath(ticket.id)} className="text-sm underline">
-                View
-              </Link>
-            </CardFooter>
-          </Card>
+        {tickets.map((ticket) => (
+          <TicketItem key={ticket.id} ticket={ticket} />
         ))}
       </div>
     </div>
