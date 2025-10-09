@@ -9,7 +9,6 @@ import { ticketsPath } from "@/paths"
 
 export const deleteTicket = async (id: string) => {
   // await new Promise((resolve) => setTimeout(resolve, 2000))
-
   try {
     await prisma.ticket.delete({
       where: {
