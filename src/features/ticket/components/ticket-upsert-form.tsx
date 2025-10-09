@@ -1,8 +1,8 @@
 "use client"
 
-import { Ticket } from "@prisma/index"
+import { Ticket } from "@prisma/client"
 import { useActionState, useRef } from "react"
-import { DatePicker } from "@/components/date-picker"
+import { DatePicker, ImperativeHandleFromDatePicker } from "@/components/date-picker"
 import { FieldError } from "@/components/form/field-error"
 import { Form } from "@/components/form/form"
 import { SubmitButton } from "@/components/form/submit-button"
@@ -19,7 +19,7 @@ type TicketUpsertFormProps = {
 const TicketUpsertForm = ({ ticket }: TicketUpsertFormProps) => {
   const [actionState, action] = useActionState(upsertTicket.bind(null, ticket?.id), EMPTY_ACTION_STATE)
 
-  const datePickerImperativeHandleRef = useRef<{ reset: () => void }>(null)
+  const datePickerImperativeHandleRef = useRef<ImperativeHandleFromDatePicker>(null)
 
   const handleSuccess = () => {
     datePickerImperativeHandleRef.current?.reset()
@@ -49,12 +49,6 @@ const TicketUpsertForm = ({ ticket }: TicketUpsertFormProps) => {
           <Label htmlFor="deadline" className="mb-2">
             Deadline
           </Label>
-          {/* <Input
-            id="deadline"
-            name="deadline"
-            type="date"
-            defaultValue={(actionState.payload?.get("deadline") as string) ?? ticket?.deadline}
-          /> */}
           <DatePicker
             id="deadline"
             name="deadline"

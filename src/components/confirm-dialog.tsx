@@ -1,4 +1,4 @@
-import { cloneElement, useActionState, useState } from "react"
+import { cloneElement, ReactElement, useActionState, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,7 @@ type useConfirmDialogArgs = {
   title?: string
   description?: string
   action: () => Promise<ActionState>
-  trigger: React.ReactElement
+  trigger: ReactElement<{ onClick: () => void }, string>
 }
 
 const useConfirmDialog = ({
@@ -28,15 +28,15 @@ const useConfirmDialog = ({
 }: useConfirmDialogArgs) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const dialogTrigger = cloneElement(trigger, {
-    onClick: () => setIsOpen((state) => !state),
-  })
-
   const [actionState, formAction] = useActionState(action, EMPTY_ACTION_STATE)
 
   const handleSuccess = () => {
     setIsOpen(false)
   }
+
+  const dialogTrigger = cloneElement(trigger, {
+    onClick: () => setIsOpen((state) => !state),
+  })
 
   const dialog = (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
