@@ -27,6 +27,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.css",
     ".next/types/**/*.ts",
     ".next/types/app/sign-up/page.tsx",
     ".next/types/app/sign-in/page.tsx"

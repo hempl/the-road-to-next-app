@@ -1,4 +1,6 @@
 import { cloneElement, ReactElement, useActionState, useState } from "react"
+import { Form } from "@/components/form/components/form"
+import { SubmitButton } from "@/components/form/components/submit-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,8 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Form } from "./form/form"
-import { SubmitButton } from "./form/submit-button"
 import { ActionState, EMPTY_ACTION_STATE } from "./form/utils/to-action-state"
 
 type useConfirmDialogArgs = {

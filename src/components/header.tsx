@@ -2,10 +2,10 @@
 
 import { LucideBird, LucideLogOut } from "lucide-react"
 import Link from "next/link"
+import { SubmitButton } from "@/components/form/components/submit-button"
 import { signOut } from "@/features/auth/actions/sign-out"
 import { useAuth } from "@/features/auth/hooks/use-auth"
-import { homePath, signInPath, signUpPath, ticketsPath } from "@/paths"
-import { SubmitButton } from "./form/submit-button"
+import { homePath, signInPath, signUpPath } from "@/paths"
 import { ThemeSwitcher } from "./theme/theme-switcher"
 import { buttonVariants } from "./ui/button"
 
@@ -15,14 +15,9 @@ const Header = () => {
     return null
   }
   const navItems = user ? (
-    <>
-      <Link href={ticketsPath()} className={buttonVariants({ variant: "default" })}>
-        Tickets
-      </Link>
-      <form action={signOut}>
-        <SubmitButton label="Sign Out" icon={<LucideLogOut />} />
-      </form>
-    </>
+    <form action={signOut}>
+      <SubmitButton label="Sign Out" icon={<LucideLogOut />} />
+    </form>
   ) : (
     <>
       <Link href={signUpPath()} className={buttonVariants({ variant: "outline" })}>

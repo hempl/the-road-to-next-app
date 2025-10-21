@@ -4,6 +4,8 @@ import { LucideMoreVertical, LucidePencil, LucideSquareArrowOutUpRight } from "l
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { getAuth } from "@/features/auth/actions/get-auth"
+import { isOwner } from "@/features/auth/utils/is-owner"
 import { TicketMoreMenu } from "@/features/ticket/components/ticket-more-menu"
 import { TICKET_ICONS } from "@/features/ticket/constants"
 import { ticketEditPath, ticketPath } from "@/paths"
@@ -21,6 +23,9 @@ type TicketItemProps = {
 }
 
 const TicketItem = async ({ ticket, isDetail }: TicketItemProps) => {
+  const { user } = await getAuth()
+  const isTicketOwner = isOwner(user, ticket)
+
   const detailButton = (
     <Button variant="outline" size="icon" asChild>
       <Link prefetch href={ticketPath(ticket.id)}>
@@ -29,15 +34,15 @@ const TicketItem = async ({ ticket, isDetail }: TicketItemProps) => {
     </Button>
   )
 
-  const editButton = (
+  const editButton = isTicketOwner ? (
     <Button variant="outline" size="icon" asChild>
       <Link prefetch href={ticketEditPath(ticket.id)}>
         <LucidePencil />
       </Link>
     </Button>
-  )
+  ) : null
 
-  const moreMenu = (
+  const moreMenu = isTicketOwner ? (
     <TicketMoreMenu
       ticket={ticket}
       trigger={
@@ -46,7 +51,8 @@ const TicketItem = async ({ ticket, isDetail }: TicketItemProps) => {
         </Button>
       }
     />
-  )
+  ) : null
+
   return (
     <div className={clsx("w-full flex gap-x-1", { "max-w-[580px]": isDetail, "max-w-[420px]": !isDetail })}>
       <Card className="w-full">
