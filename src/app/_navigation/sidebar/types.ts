@@ -4,4 +4,5 @@ export type NavItem = {
   title: string
   href: string
   icon: ReactElement<{ className?: string }, string>
+  separator?: boolean
 }
