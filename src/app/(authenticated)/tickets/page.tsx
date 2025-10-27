@@ -1,3 +1,4 @@
+import { SearchParams } from "nuqs"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { CardCompact } from "@/components/card-compact"
@@ -7,7 +8,7 @@ import { Spinner } from "@/components/spinner"
 import { getAuth } from "@/features/auth/actions/get-auth"
 import { TicketList } from "@/features/ticket/components/ticket-list"
 import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-form"
-import { SearchParams } from "@/features/ticket/search-params"
+import { searchParamsCache } from "@/features/ticket/search-params"
 // import { getBaseUrl } from "@/utils/url"
 
 type TicketsPageProps = {
@@ -16,7 +17,7 @@ type TicketsPageProps = {
 
 const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
   const { user } = await getAuth()
-  // console.log(getBaseUrl())
+
   return (
     <div className="flex-1 flex flex-col gap-y-8">
       <Heading title="My Tickets" description="All your tickets at one place" />
@@ -30,7 +31,7 @@ const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
         ></CardCompact>
 
         <Suspense fallback={<Spinner />}>
-          <TicketList userId={user?.id} searchParams={await searchParams} />
+          <TicketList userId={user?.id} searchParams={await searchParamsCache.parse(searchParams)} />
         </Suspense>
       </ErrorBoundary>
     </div>
