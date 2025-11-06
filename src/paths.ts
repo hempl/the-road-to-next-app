@@ -3,6 +3,7 @@ export const homePath = () => "/"
 export const ticketsPath = () => "/tickets"
 export const ticketPath = (ticketId: string) => `/tickets/${ticketId}`
 export const ticketEditPath = (ticketId: string) => `/tickets/${ticketId}/edit`
+export const commentEditPath = (ticketId: string, commentId: string) => `/tickets/${ticketId}/${commentId}/edit`
 
 export const signUpPath = () => "/sign-up"
 export const signInPath = () => "/sign-in"
