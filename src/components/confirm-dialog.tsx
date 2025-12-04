@@ -1,6 +1,5 @@
-import { cloneElement, ReactElement, useActionState, useState } from "react"
-import { Form } from "@/components/form/components/form"
-import { SubmitButton } from "@/components/form/components/submit-button"
+import { cloneElement, useActionState, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,13 +10,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useActionFeedback } from "./form/hooks/use-action-feedback"
 import { ActionState, EMPTY_ACTION_STATE } from "./form/utils/to-action-state"
+import { Button } from "./ui/button"
 
 type useConfirmDialogArgs = {
   title?: string
   description?: string
   action: () => Promise<ActionState>
-  trigger: ReactElement<{ onClick: () => void }, string>
+  trigger: React.ReactElement<{ onClick: () => void }, string> | ((isPending: boolean) => React.ReactElement)
+  onSuccess?: (actionState: ActionState) => void
 }
 
 const useConfirmDialog = ({
@@ -25,17 +27,48 @@ const useConfirmDialog = ({
   description = "This action cannot be undone. Make sure you understand the consequences.",
   action,
   trigger,
+  onSuccess,
 }: useConfirmDialogArgs) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const [actionState, formAction] = useActionState(action, EMPTY_ACTION_STATE)
+  const [actionState, formAction, isPending] = useActionState(action, EMPTY_ACTION_STATE)
 
-  const handleSuccess = () => {
-    setIsOpen(false)
+  let dialogTrigger
+  if (typeof trigger === "function") {
+    dialogTrigger = cloneElement(trigger(isPending))
+  } else {
+    dialogTrigger = cloneElement(trigger, {
+      onClick: () => setIsOpen((state) => !state),
+    })
   }
 
-  const dialogTrigger = cloneElement(trigger, {
-    onClick: () => setIsOpen((state) => !state),
+  const toastRef = useRef<string | number | null>(null)
+
+  useEffect(() => {
+    if (isPending) {
+      toastRef.current = toast.loading("Deleting ...")
+    } else if (toastRef.current) {
+      toast.dismiss(toastRef.current)
+    }
+    return () => {
+      if (toastRef.current) {
+        toast.dismiss(toastRef.current)
+      }
+    }
+  }, [isPending])
+
+  useActionFeedback(actionState, {
+    onSuccess: ({ actionState }) => {
+      if (actionState.message) {
+        toast.success(actionState.message)
+      }
+      onSuccess?.(actionState)
+    },
+    onError: ({ actionState }) => {
+      if (actionState.message) {
+        toast.error(actionState.message)
+      }
+    },
   })
 
   const dialog = (
@@ -48,9 +81,9 @@ const useConfirmDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Form action={formAction} actionState={actionState} onSuccess={handleSuccess}>
-              <SubmitButton label="Confirm" />
-            </Form>
+            <form action={formAction}>
+              <Button type="submit">Confirm</Button>
+            </form>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

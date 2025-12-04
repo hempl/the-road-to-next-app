@@ -21,10 +21,11 @@ export const upsertComment = async (
   formData: FormData
 ) => {
   const { user } = await getAuthOrRedirect()
-
+  let comment
+  console.log(`in upsertComment: id=${id}`)
   try {
     if (id) {
-      const comment = await prisma.comment.findUnique({
+      comment = await prisma.comment.findUnique({
         where: {
           id,
         },
@@ -44,20 +45,31 @@ export const upsertComment = async (
       ticketId,
     }
 
-    await prisma.comment.upsert({
+    console.log(`in upsertComment(2): dbData=${JSON.stringify(dbData)}`)
+
+    comment = await prisma.comment.upsert({
       where: {
         id: id || "",
       },
       update: dbData,
       create: dbData,
+      include: {
+        user: true,
+      },
     })
   } catch (error) {
     return fromErrorToActionState(error, formData)
   }
   revalidatePath(ticketPath(ticketId))
+
+  console.log(`in upsertComment(3): comment=${JSON.stringify(comment)}, id=${id}`)
   if (id) {
     await setCookieByKey("toast", "Comment updated")
     redirect(ticketPath(ticketId))
   }
-  return toActionState("SUCCESS", "Comment created")
+  const actionState = toActionState("SUCCESS", "Comment created", undefined, { ...comment, isOwner: true })
+
+  console.log(`in upsertComment(4): actionState=${JSON.stringify(actionState)}`)
+
+  return actionState
 }
