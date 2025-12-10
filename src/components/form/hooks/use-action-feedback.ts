@@ -21,6 +21,8 @@ const useActionFeedback = (actionState: ActionState, options: UseActionFeedbackO
     if (actionState.status === "ERROR") {
       options.onError?.({ actionState })
     }
+
+    prevTimestamp.current = actionState.timestamp
   }, [isUpdate, actionState, options])
 }
 

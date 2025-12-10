@@ -1,22 +1,21 @@
 "use client"
 
-import { Comment } from "@prisma/client"
 import { useActionState } from "react"
 import { FieldError } from "@/components/form/field-error"
 import { Form } from "@/components/form/form"
 import { SubmitButton } from "@/components/form/submit-button"
 import { ActionState, EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state"
 import { Textarea } from "@/components/ui/textarea"
-import { upsertComment } from "@/features/comment/actions/upsert-comment"
+import { createComment } from "../actions/create-comment"
 import { CommentWithMetadata } from "../types"
 
-type CommentUpsertFormProps = {
+type CommentCreateFormProps = {
   ticketId: string
-  comment?: Comment
   onCreateComment?: (comment: CommentWithMetadata | undefined) => void
 }
-const CommentUpsertForm = ({ ticketId, comment, onCreateComment }: CommentUpsertFormProps) => {
-  const [actionState, action] = useActionState(upsertComment.bind(null, ticketId, comment?.id), EMPTY_ACTION_STATE)
+
+const CommentCreateForm = ({ ticketId, onCreateComment }: CommentCreateFormProps) => {
+  const [actionState, action] = useActionState(createComment.bind(null, ticketId), EMPTY_ACTION_STATE)
 
   const handleSuccess = (actionState: ActionState) => {
     onCreateComment?.(actionState.data as CommentWithMetadata)
@@ -24,16 +23,12 @@ const CommentUpsertForm = ({ ticketId, comment, onCreateComment }: CommentUpsert
 
   return (
     <Form action={action} actionState={actionState} onSuccess={handleSuccess}>
-      <Textarea
-        name="content"
-        placeholder="What's on your mind ..."
-        defaultValue={(actionState.payload?.get("content") as string) ?? comment?.content}
-      />
+      <Textarea name="content" placeholder="What's on your mind ..." />
       <FieldError actionState={actionState} name="content" />
 
-      <SubmitButton label={comment ? "Edit" : "Comment"} />
+      <SubmitButton label="Comment" />
     </Form>
   )
 }
 
-export { CommentUpsertForm }
+export { CommentCreateForm }
